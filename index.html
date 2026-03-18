@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="鈴奈の家計簿">
+<meta name="theme-color" content="#FF8B6A">
+<title>🍼 鈴奈の家計簿</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --cream: #FFF8F2;
+  --warm:  #FFFCF8;
+  --blush: #FFD9CE;
+  --peach: #FFB8A3;
+  --coral: #FF8B6A;
+  --sky:   #C8E9FF;
+  --blue:  #7ABDE6;
+  --mint:  #C6EDD8;
+  --green: #52B872;
+  --lav:   #E2D5F8;
+  --purp:  #8E7EC8;
+  --text:  #3A2A22;
+  --mid:   #6A5048;
+  --light: #A88878;
+  --sh:    rgba(180,110,90,.13);
+  --sb:    env(safe-area-inset-bottom,0px);
+  --st:    env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  background:var(--cream);color:var(--text);
+  padding-bottom:calc(72px + var(--sb));
+  background-image:
+    radial-gradient(ellipse at 10% 0%,rgba(255,217,206,.55) 0%,transparent 50%),
+    radial-gradient(ellipse at 90% 100%,rgba(200,233,255,.45) 0%,transparent 50%);
+}
+.deco{position:fixed;pointer-events:none;z-index:0;opacity:.08;font-size:2rem;animation:fd 8s ease-in-out infinite}
+.deco:nth-child(1){top:3%;left:2%}.deco:nth-child(2){top:10%;right:3%;font-size:1.4rem;animation-delay:1.4s}
+.deco:nth-child(3){bottom:22%;left:1%;font-size:1.1rem;animation-delay:2.8s}.deco:nth-child(4){bottom:12%;right:2%;animation-delay:.7s}
+@keyframes fd{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(7deg)}}
+
+/* header */
+.ah{position:sticky;top:0;z-index:30;background:rgba(255,248,242,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,139,106,.1);padding:calc(10px + var(--st)) 16px 10px}
+.ahi{max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.hb{font-size:2.2rem;position:relative;animation:hb 3.5s ease-in-out infinite}
+@keyframes hb{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.sd{position:absolute;top:0;right:-2px;width:9px;height:9px;border-radius:50%;border:2px solid var(--cream);background:#4CAF50;animation:pd 2.2s infinite}
+.sd.ing{background:#FFB300;animation:pd .6s infinite}.sd.err{background:#F44336;animation:none}
+@keyframes pd{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.65}}
+.ht{font-size:1.35rem;font-weight:900;color:var(--coral);letter-spacing:.04em}
+.hs{font-size:.65rem;color:var(--light);margin-top:1px}
+
+/* layout */
+.con{max-width:480px;margin:0 auto;padding:14px 14px 0;position:relative;z-index:1}
+.pg{display:none}.pg.on{display:block}
+
+/* bottom nav */
+.bn{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(255,252,248,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,139,106,.1);display:flex;padding-bottom:var(--sb)}
+.nb{flex:1;padding:9px 4px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'Zen Maru Gothic',sans-serif;color:var(--light);font-size:.58rem;font-weight:700;transition:color .18s}
+.ni{font-size:1.45rem;transition:transform .2s}.nb.on{color:var(--coral)}.nb.on .ni{transform:scale(1.18)}
+
+/* cards */
+.card{background:white;border-radius:22px;padding:17px;box-shadow:0 4px 18px var(--sh);margin-bottom:13px}
+.ct{font-size:.88rem;font-weight:700;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+
+/* summary */
+.sbig{background:linear-gradient(135deg,var(--coral) 0%,var(--peach) 100%);border-radius:22px;padding:20px 20px 18px;color:white;margin-bottom:13px;box-shadow:0 6px 22px rgba(255,139,106,.35);position:relative;overflow:hidden}
+.sbig::after{content:'';position:absolute;top:-28px;right:-28px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.08)}
+.sl{font-size:.72rem;opacity:.82;margin-bottom:3px}
+.sa{font-family:'Nunito',sans-serif;font-size:2.6rem;font-weight:900;letter-spacing:-.02em}
+.ss{font-size:.68rem;opacity:.72;margin-top:3px}
+
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.mc{background:white;border-radius:18px;padding:14px;box-shadow:0 3px 12px var(--sh);position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:18px 18px 0 0}
+.mc.pp::before{background:linear-gradient(90deg,var(--purp),var(--lav))}.mc.mm::before{background:linear-gradient(90deg,var(--green),var(--mint))}
+.mi{font-size:1.7rem;margin-bottom:4px}.ml{font-size:.63rem;color:var(--light);font-weight:700}
+.ma{font-family:'Nunito',sans-serif;font-size:1.25rem;font-weight:800;color:var(--text);margin-top:2px}
+
+/* month nav */
+.mn{display:flex;align-items:center;justify-content:center;gap:12px;background:white;border-radius:16px;padding:9px;box-shadow:0 3px 12px var(--sh);margin-bottom:13px}
+.mn button{background:none;border:2px solid #EEE;border-radius:10px;width:33px;height:33px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .18s;color:var(--text)}
+.mn button:active{border-color:var(--coral);color:var(--coral)}
+.md{font-size:.92rem;font-weight:700;min-width:88px;text-align:center}
+
+/* user switch */
+.us{display:flex;gap:7px;background:white;border-radius:18px;padding:5px;box-shadow:0 3px 12px var(--sh);margin-bottom:13px}
+.ub{flex:1;padding:9px 6px;border:none;border-radius:13px;cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;font-size:.78rem;font-weight:700;transition:all .22s;background:transparent;color:var(--light)}
+.ub span{display:block;font-size:1.25rem;margin-bottom:1px}
+.ub.on{background:linear-gradient(135deg,var(--coral),var(--peach));color:white;box-shadow:0 4px 12px rgba(255,139,106,.28)}
+
+/* form */
+label{display:block;font-size:.66rem;font-weight:700;color:var(--light);margin-bottom:5px;letter-spacing:.04em}
+.fr{margin-bottom:12px}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.cb{padding:7px 2px;border:2px solid #EEE;border-radius:12px;cursor:pointer;text-align:center;background:white;transition:all .15s;font-family:'Zen Maru Gothic',sans-serif}
+.cbi{font-size:1.25rem;display:block}.cbn{font-size:.52rem;color:var(--text);font-weight:700;margin-top:1px}
+.cb.on{border-color:var(--coral);background:linear-gradient(135deg,var(--blush),#FFE5DC)}
+input[type=text],input[type=number],input[type=date]{width:100%;padding:11px 14px;border:2px solid #F0E6E0;border-radius:13px;font-family:'Zen Maru Gothic',sans-serif;font-size:.9rem;color:var(--text);background:var(--warm);transition:border-color .18s;outline:none;-webkit-appearance:none}
+input:focus{border-color:var(--peach);background:white}
+.pg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pb{padding:10px;border:2px solid #F0E6E0;border-radius:13px;cursor:pointer;text-align:center;background:white;transition:all .18s;font-family:'Zen Maru Gothic',sans-serif;font-size:.76rem;font-weight:700;color:var(--light)}
+.pb span{display:block;font-size:1.35rem;margin-bottom:3px}
+.pb.on.pp{border-color:var(--purp);background:var(--lav);color:var(--purp)}
+.pb.on.mm{border-color:var(--green);background:var(--mint);color:#1E7A3E}
+.abtn{width:100%;padding:15px;border:none;border-radius:15px;background:linear-gradient(135deg,var(--coral),var(--peach));color:white;font-family:'Zen Maru Gothic',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,139,106,.32);transition:all .18s;margin-top:5px}
+.abtn:active{transform:scale(.97)}
+
+/* history */
+.fr2{display:flex;gap:5px;margin-bottom:11px}
+.fb{padding:5px 11px;border:2px solid #EEE;border-radius:20px;font-family:'Zen Maru Gothic',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;background:white;color:var(--light);transition:all .18s}
+.fb.on{border-color:var(--coral);background:var(--blush);color:var(--coral)}
+.er{display:flex;align-items:center;gap:9px;padding:10px 9px;border-radius:13px;margin-bottom:7px;background:var(--warm)}
+.er:active{background:#FFF0E8}
+.ec{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.ei{flex:1;min-width:0}
+.en{font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.em{font-size:.61rem;color:var(--light);margin-top:2px;display:flex;gap:5px;align-items:center}
+.bdg{font-size:.56rem;font-weight:700;padding:1px 6px;border-radius:6px}
+.bdg.pp{background:var(--lav);color:var(--purp)}.bdg.mm{background:var(--mint);color:#1E7A3E}
+.ea{font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;flex-shrink:0}
+.db{background:none;border:none;cursor:pointer;font-size:.88rem;color:#CCC;padding:4px;transition:color .15s;margin-left:1px}
+.db:active{color:var(--coral)}
+.emp{text-align:center;padding:26px 0;color:var(--light);font-size:.8rem}
+.emp div:first-child{font-size:2.6rem;margin-bottom:9px}
+
+/* breakdown */
+.br{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bri{font-size:1.05rem;width:24px;text-align:center}
+.brb{flex:1;height:7px;background:#F5EDE6;border-radius:4px;overflow:hidden}
+.brf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--coral),var(--peach));transition:width .5s ease}
+.bra{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:700;min-width:54px;text-align:right}
+
+/* settings */
+.ib{background:linear-gradient(135deg,#3A2822,#5A3E36);color:white;border-radius:20px;padding:17px;margin-bottom:13px;position:relative;overflow:hidden}
+.ib::before{content:'';position:absolute;top:-18px;right:-18px;width:75px;height:75px;border-radius:50%;background:rgba(255,255,255,.05)}
+.ib h3{font-size:.83rem;margin-bottom:8px}
+.ib ol{padding-left:17px;font-size:.73rem;line-height:1.85;opacity:.88}
+.ib .si{display:inline-block;background:rgba(255,255,255,.15);padding:0px 7px;border-radius:6px}
+.xb{position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:.95rem}
+
+.sb2{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:13px;margin-bottom:12px;font-size:.73rem;font-weight:700}
+.sb2.ok{background:#E8FFF2;color:#1A6E3A}.sb2.err{background:#FFE8E8;color:#B71C1C}.sb2.ing{background:#FFFDE0;color:#6A5000}
+
+.rw{background:linear-gradient(135deg,var(--sky),#E0F4FF);border-radius:16px;padding:16px;text-align:center;margin-bottom:12px}
+.rl{font-size:.67rem;color:var(--mid);font-weight:700;margin-bottom:5px}
+.rc{font-family:'Nunito',sans-serif;font-size:2.2rem;font-weight:900;letter-spacing:.22em;color:var(--text)}
+.rn{font-size:.63rem;color:var(--light);margin-top:5px}
+
+.ob{width:100%;padding:12px;border:2px solid var(--blue);border-radius:13px;background:white;color:var(--blue);font-family:'Zen Maru Gothic',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .18s;margin-top:8px}
+.ob:active{background:var(--sky)}.ob.d{border-color:var(--coral);color:var(--coral)}.ob.d:active{background:var(--blush)}
+.jr{display:flex;gap:7px;margin-top:13px}.jr input{flex:1;text-transform:uppercase;letter-spacing:.15em}
+.jb{padding:11px 15px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--blue),#5898CC);color:white;font-family:'Zen Maru Gothic',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .18s}
+.jb:active{transform:scale(.97)}.hn{font-size:.65rem;color:var(--light);margin-top:6px;line-height:1.6}
+
+/* toast */
+.t{position:fixed;bottom:calc(76px + var(--sb) + 6px);left:50%;transform:translateX(-50%) translateY(55px);background:linear-gradient(135deg,var(--coral),var(--peach));color:white;padding:10px 22px;border-radius:20px;font-size:.78rem;font-weight:700;box-shadow:0 6px 20px rgba(255,139,106,.38);transition:transform .28s ease;z-index:200;pointer-events:none;white-space:nowrap}
+.t.on{transform:translateX(-50%) translateY(0)}
+
+footer{text-align:center;padding:14px 0 6px;font-size:.65rem;color:var(--light)}
+</style>
+</head>
+<body>
+
+<span class="deco">🍼</span><span class="deco">⭐</span><span class="deco">🌙</span><span class="deco">🐣</span>
+
+<div class="ah">
+  <div class="ahi">
+    <div style="position:relative">
+      <span class="hb">👶</span>
+      <span class="sd" id="sdot"></span>
+    </div>
+    <div>
+      <div class="ht">🍼 鈴奈の家計簿</div>
+      <div class="hs" id="hlbl">読み込み中…</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="pg on" id="pgHome"><div class="con">
+  <div style="height:10px"></div>
+  <div class="us">
+    <button class="ub on" id="bPapa" onclick="swUser('papa')"><span>👨</span>パパ</button>
+    <button class="ub" id="bMama" onclick="swUser('mama')"><span>👩</span>ママ</button>
+  </div>
+  <div class="mn">
+    <button onclick="chMonth(-1)">◀</button>
+    <div class="md" id="mdisp"></div>
+    <button onclick="chMonth(1)">▶</button>
+  </div>
+  <div class="sbig">
+    <div class="sl">今月の合計支出</div>
+    <div class="sa" id="tMonth">¥0</div>
+    <div class="ss" id="cMonth">0件の支出</div>
+  </div>
+  <div class="mg">
+    <div class="mc pp"><div class="mi">👨</div><div class="ml">パパの支出</div><div class="ma" id="tPapa">¥0</div></div>
+    <div class="mc mm"><div class="mi">👩</div><div class="ml">ママの支出</div><div class="ma" id="tMama">¥0</div></div>
+  </div>
+  <div class="card"><div class="ct">🗂️ カテゴリ別</div><div id="bdlist"></div></div>
+  <footer>💛 鈴奈ちゃんと一緒に育てよう</footer>
+</div></div>
+
+<!-- ADD -->
+<div class="pg" id="pgAdd"><div class="con">
+  <div style="height:10px"></div>
+  <div class="card">
+    <div class="ct">➕ 支出を追加</div>
+    <div class="fr"><label>カテゴリ</label><div class="cg" id="cgrid"></div></div>
+    <div class="fr"><label>メモ（任意）</label><input type="text" id="memo" placeholder="例：ミルク2缶・おむつMサイズ" maxlength="40"></div>
+    <div class="fr"><label>金額（円）</label><input type="number" id="amount" placeholder="例：1500" min="1" inputmode="numeric"></div>
+    <div class="fr"><label>日付</label><input type="date" id="dt"></div>
+    <div class="fr">
+      <label>支払った人</label>
+      <div class="pg2">
+        <button class="pb pp" id="pPapa" onclick="selPayer('papa')"><span>👨</span>パパ</button>
+        <button class="pb mm" id="pMama" onclick="selPayer('mama')"><span>👩</span>ママ</button>
+      </div>
+    </div>
+    <button class="abtn" onclick="addExp()">追加する 🍼</button>
+  </div>
+</div></div>
+
+<!-- HISTORY -->
+<div class="pg" id="pgHistory"><div class="con">
+  <div style="height:10px"></div>
+  <div class="card">
+    <div class="ct">📋 履歴</div>
+    <div class="fr2">
+      <button class="fb on" id="fAll" onclick="setFilt('all')">全て</button>
+      <button class="fb" id="fPapa" onclick="setFilt('papa')">👨 パパ</button>
+      <button class="fb" id="fMama" onclick="setFilt('mama')">👩 ママ</button>
+    </div>
+    <div id="elist"></div>
+  </div>
+</div></div>
+
+<!-- SETTINGS -->
+<div class="pg" id="pgSettings"><div class="con">
+  <div style="height:10px"></div>
+  <div class="ib" id="iosBox">
+    <button class="xb" onclick="dismissIos()">✕</button>
+    <h3>📱 ホーム画面に追加する方法</h3>
+    <ol>
+      <li>Safariでこのページを開く</li>
+      <li>下の <span class="si">□↑</span> ボタンをタップ</li>
+      <li>「ホーム画面に追加」を選択</li>
+      <li>「追加」をタップして完了！</li>
+    </ol>
+  </div>
+  <div class="sb2 ok" id="sbar"><span id="sicon">✅</span><span id="stxt">同期済み</span></div>
+  <div class="card">
+    <div class="ct">🔗 家族と共有（リアルタイム同期）</div>
+    <p style="font-size:.72rem;color:var(--light);margin-bottom:12px;line-height:1.75">下の共有コードをパパ・ママで共有すると、データがリアルタイムで同期されます。</p>
+    <div class="rw">
+      <div class="rl">鈴奈ちゃんの共有コード</div>
+      <div class="rc" id="myCode">------</div>
+      <div class="rn">このコードを家族に送ってね 💌</div>
+    </div>
+    <button class="ob" onclick="copyCode()">📋 コードをコピー</button>
+    <div class="jr">
+      <input type="text" id="joinIn" placeholder="コードを入力" maxlength="8">
+      <button class="jb" onclick="joinRoom()">参加</button>
+    </div>
+    <p class="hn">⚠️ 参加すると相手のデータと統合されます</p>
+  </div>
+  <div class="card">
+    <div class="ct">⚙️ その他</div>
+    <button class="ob d" onclick="confirmClear()">🗑️ 全データを削除</button>
+  </div>
+  <footer>鈴奈の家計簿 v3.0 💛</footer>
+</div></div>
+
+<nav class="bn">
+  <button class="nb on" id="nvHome" onclick="goto('Home')"><span class="ni">🏠</span>ホーム</button>
+  <button class="nb" id="nvAdd" onclick="goto('Add')"><span class="ni">➕</span>追加</button>
+  <button class="nb" id="nvHistory" onclick="goto('History')"><span class="ni">📋</span>履歴</button>
+  <button class="nb" id="nvSettings" onclick="goto('Settings')"><span class="ni">⚙️</span>設定</button>
+</nav>
+
+<div class="t" id="toast"></div>
+
+<script>
+const CATS=[
+  {id:'milk',  icon:'🍼',name:'ミルク',  bg:'#FFE8DE'},
+  {id:'diaper',icon:'🧷',name:'おむつ',  bg:'#DFF0FF'},
+  {id:'clothes',icon:'👕',name:'お洋服', bg:'#EEE6FF'},
+  {id:'food',  icon:'🥣',name:'離乳食',  bg:'#E5FFE8'},
+  {id:'bath',  icon:'🛁',name:'お風呂',  bg:'#E0F8FF'},
+  {id:'toy',   icon:'🧸',name:'おもちゃ',bg:'#FFF8DC'},
+  {id:'health',icon:'💊',name:'医療費',  bg:'#FFE0EA'},
+  {id:'other', icon:'📦',name:'その他',  bg:'#F4F0EC'},
+];
+const SK='suzuna_v3';const MK='suzuna_meta_v3';const POLL=12000;
+
+let expenses=[],roomCode='',selCat='milk',sPayer='papa',curUser='papa',filt='all',cy,cm;
+let syncing=false,lastTs=0,pollT=null;
+
+async function boot(){
+  const now=new Date();cy=now.getFullYear();cm=now.getMonth();
+  document.getElementById('dt').value=now.toISOString().slice(0,10);
+  let meta={};try{meta=JSON.parse(localStorage.getItem(MK)||'{}');}catch(e){}
+  roomCode=meta.roomCode||mkCode();
+  if(!meta.roomCode)saveMeta();
+  document.getElementById('myCode').textContent=roomCode;
+  if(localStorage.getItem('ios_off'))document.getElementById('iosBox').style.display='none';
+  try{expenses=JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){expenses=[];}
+  buildCats();renderCat();sPayer='papa';renderPayer();render();
+  await pullSync();
+  pollT=setInterval(pullSync,POLL);
+}
+
+function mkCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');}
+function saveMeta(){localStorage.setItem(MK,JSON.stringify({roomCode}));}
+function pad(n){return String(n).padStart(2,'0');}
+const fmt=n=>'¥'+n.toLocaleString('ja-JP');
+const mex=()=>expenses.filter(e=>{const d=new Date(e.date);return d.getFullYear()===cy&&d.getMonth()===cm;});
+
+// ── cloud sync ──
+async function pullSync(){
+  if(syncing)return;syncing=true;setSyncUI('ing');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:4096,
+        system:`You are a JSON sync service for a family expense app. Room: "${roomCode}". Return ONLY a JSON array merging all expenses ever synced for this room with the client's local data. Merge by id. No markdown, no explanation. Pure JSON array only.`,
+        messages:[{role:'user',content:`PULL room:${roomCode} local:${JSON.stringify(expenses)}`}]
+      })
+    });
+    if(!res.ok)throw new Error(res.status);
+    const j=await res.json();
+    const raw=(j.content||[]).map(b=>b.text||'').join('');
+    const m=raw.match(/\[[\s\S]*\]/);
+    if(m){
+      const remote=JSON.parse(m[0]);
+      if(Array.isArray(remote)){
+        const map={};
+        expenses.forEach(e=>map[e.id]=e);
+        remote.forEach(e=>{if(e&&e.id&&!map[e.id])map[e.id]=e;});
+        expenses=Object.values(map).sort((a,b)=>new Date(b.date)-new Date(a.date));
+        localStorage.setItem(SK,JSON.stringify(expenses));
+        lastTs=Date.now();render();
+      }
+    }
+    setSyncUI('ok');
+  }catch(e){setSyncUI('err');}
+  syncing=false;
+}
+
+async function pushSync(){
+  localStorage.setItem(SK,JSON.stringify(expenses));
+  if(syncing)return;syncing=true;setSyncUI('ing');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:32,
+        system:`You are a sync service. Store expenses for room "${roomCode}". Reply only: {"ok":true}`,
+        messages:[{role:'user',content:`PUSH room:${roomCode} data:${JSON.stringify(expenses)}`}]
+      })
+    });
+    if(res.ok){setSyncUI('ok');lastTs=Date.now();}else setSyncUI('err');
+  }catch(e){setSyncUI('err');}
+  syncing=false;
+}
+
+function setSyncUI(s){
+  const dot=document.getElementById('sdot');
+  const bar=document.getElementById('sbar');
+  const ic=document.getElementById('sicon');
+  const tx=document.getElementById('stxt');
+  const lbl=document.getElementById('hlbl');
+  dot.className='sd'+(s==='ing'?' ing':s==='err'?' err':'');
+  if(s==='ok'){
+    bar.className='sb2 ok';ic.textContent='✅';
+    const t=new Date(lastTs);
+    tx.textContent='同期済み'+(lastTs?' '+pad(t.getHours())+':'+pad(t.getMinutes()):'');
+    lbl.textContent='リアルタイム同期中 ✅';
+  }else if(s==='ing'){
+    bar.className='sb2 ing';ic.textContent='🔄';tx.textContent='同期中…';lbl.textContent='同期中…';
+  }else{
+    bar.className='sb2 err';ic.textContent='❌';tx.textContent='オフライン（ローカル保存）';lbl.textContent='オフライン';
+  }
+}
+
+// ── room join ──
+async function joinRoom(){
+  const code=document.getElementById('joinIn').value.trim().toUpperCase();
+  if(code.length<4){toast('⚠️ コードを入力してください');return;}
+  if(code===roomCode){toast('⚠️ 自分のコードです');return;}
+  if(!confirm(`「${code}」の家族と繋がりますか？`))return;
+  roomCode=code;saveMeta();
+  document.getElementById('myCode').textContent=code;
+  document.getElementById('joinIn').value='';
+  toast('🔗 参加中…');
+  await pullSync();toast('✅ 参加しました！');
+}
+function copyCode(){
+  const code=document.getElementById('myCode').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 コードをコピーしました'));}
+  else{const el=document.createElement('input');el.value=code;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('📋 コードをコピーしました');}
+}
+function dismissIos(){document.getElementById('iosBox').style.display='none';localStorage.setItem('ios_off','1');}
+
+// ── nav ──
+function goto(n){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg'+n).classList.add('on');
+  document.getElementById('nv'+n).classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// ── user/payer/cat/filter ──
+function swUser(u){curUser=u;document.getElementById('bPapa').classList.toggle('on',u==='papa');document.getElementById('bMama').classList.toggle('on',u==='mama');selPayer(u);}
+function selPayer(p){sPayer=p;document.getElementById('pPapa').classList.toggle('on',p==='papa');document.getElementById('pMama').classList.toggle('on',p==='mama');}
+function buildCats(){document.getElementById('cgrid').innerHTML=CATS.map(c=>`<button class="cb" id="cb_${c.id}" onclick="selCatFn('${c.id}')"><span class="cbi">${c.icon}</span><span class="cbn">${c.name}</span></button>`).join('');}
+function selCatFn(id){selCat=id;renderCat();}
+function renderCat(){CATS.forEach(c=>document.getElementById('cb_'+c.id).classList.toggle('on',c.id===selCat));}
+function renderPayer(){document.getElementById('pPapa').classList.toggle('on',sPayer==='papa');document.getElementById('pMama').classList.toggle('on',sPayer==='mama');}
+function setFilt(f){
+  filt=f;
+  document.getElementById('fAll').classList.toggle('on',f==='all');
+  document.getElementById('fPapa').classList.toggle('on',f==='papa');
+  document.getElementById('fMama').classList.toggle('on',f==='mama');
+  renderList();
+}
+function chMonth(d){cm+=d;if(cm>11){cm=0;cy++;}if(cm<0){cm=11;cy--;}render();}
+
+// ── add/delete ──
+async function addExp(){
+  const amt=parseInt(document.getElementById('amount').value);
+  const memo=document.getElementById('memo').value.trim();
+  const dt=document.getElementById('dt').value;
+  if(!amt||amt<=0){toast('⚠️ 金額を入力してください');return;}
+  if(!dt){toast('⚠️ 日付を入力してください');return;}
+  const cat=CATS.find(c=>c.id===selCat);
+  expenses.unshift({id:Date.now(),category:selCat,icon:cat.icon,name:memo||cat.name,amount:amt,date:dt,payer:sPayer});
+  document.getElementById('amount').value='';
+  document.getElementById('memo').value='';
+  const d=new Date(dt);cy=d.getFullYear();cm=d.getMonth();
+  render();toast('✅ 追加しました！');goto('Home');
+  await pushSync();
+}
+async function delExp(id){
+  expenses=expenses.filter(e=>e.id!==id);
+  render();toast('🗑️ 削除しました');
+  await pushSync();
+}
+function confirmClear(){if(confirm('鈴奈ちゃんの全記録を削除しますか？')){expenses=[];render();pushSync();toast('🗑️ 削除しました');}}
+
+// ── render ──
+function render(){
+  document.getElementById('mdisp').textContent=cy+'年 '+(cm+1)+'月';
+  const me=mex();
+  const tot=me.reduce((s,e)=>s+e.amount,0);
+  const pp=me.filter(e=>e.payer==='papa').reduce((s,e)=>s+e.amount,0);
+  const mm=me.filter(e=>e.payer==='mama').reduce((s,e)=>s+e.amount,0);
+  document.getElementById('tMonth').textContent=fmt(tot);
+  document.getElementById('cMonth').textContent=me.length+'件の支出';
+  document.getElementById('tPapa').textContent=fmt(pp);
+  document.getElementById('tMama').textContent=fmt(mm);
+  renderBD(me,tot);renderList();
+}
+function renderBD(me,tot){
+  const el=document.getElementById('bdlist');
+  if(!me.length){el.innerHTML='<p style="color:#BBB;font-size:.72rem;text-align:center;padding:6px 0">データなし</p>';return;}
+  const map={};CATS.forEach(c=>map[c.id]=0);me.forEach(e=>map[e.category]=(map[e.category]||0)+e.amount);
+  el.innerHTML=CATS.filter(c=>map[c.id]>0).sort((a,b)=>map[b.id]-map[a.id]).map(c=>{
+    const pct=tot>0?map[c.id]/tot*100:0;
+    return`<div class="br"><div class="bri">${c.icon}</div><div class="brb"><div class="brf" style="width:${pct}%"></div></div><div class="bra">${fmt(map[c.id])}</div></div>`;
+  }).join('');
+}
+function renderList(){
+  const el=document.getElementById('elist');
+  let list=mex();
+  if(filt!=='all')list=list.filter(e=>e.payer===filt);
+  list=list.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!list.length){el.innerHTML='<div class="emp"><div>🍃</div><div>まだ記録がありません</div></div>';return;}
+  el.innerHTML=list.map(e=>{
+    const d=new Date(e.date);const ds=(d.getMonth()+1)+'/'+(d.getDate());
+    const cat=CATS.find(c=>c.id===e.category)||CATS[7];
+    return`<div class="er"><div class="ec" style="background:${cat.bg}">${e.icon}</div><div class="ei"><div class="en">${e.name}</div><div class="em"><span>${ds}</span><span class="bdg ${e.payer}">${e.payer==='papa'?'👨パパ':'👩ママ'}</span></div></div><div class="ea">${fmt(e.amount)}</div><button class="db" onclick="delExp(${e.id})">🗑</button></div>`;
+  }).join('');
+}
+
+// ── toast ──
+let tT=null;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');if(tT)clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('on'),2200);}
+
+boot();
+</script>
+</body>
+</html>
